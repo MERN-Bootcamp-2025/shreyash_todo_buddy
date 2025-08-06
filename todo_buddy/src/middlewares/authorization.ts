@@ -6,7 +6,7 @@ export const authorization = (roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const userRepo = PostgresDataSource.getRepository(User);
     const user = await userRepo.findOne({
-      where: { id: req.user.id },
+      where: { id: req.user.uaerId },
     });
     console.log(user);
     if (!roles.includes(user.role)) {

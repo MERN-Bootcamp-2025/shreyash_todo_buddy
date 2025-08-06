@@ -1,9 +1,8 @@
-import { IsEmail, Matches, IsEnum, IsString, MinLength, MaxLength } from 'class-validator'
-import { UserRole } from '../models/user';
+import {IsDate, IsEnum, IsOptional, IsString } from 'class-validator'
 import { Priority, Status } from '../models/todo';
 import { Timestamp } from 'typeorm';
 
-export class CreateTodosDTO {
+export class CreateTodoDTO {
     @IsString()
     title: string
 
@@ -11,12 +10,15 @@ export class CreateTodosDTO {
     description: string;
 
     @IsEnum(Status)
+    @IsOptional() 
     status?: Status
 
     @IsEnum(Priority)
+    @IsOptional()
     priority?: Priority;
 
-    expected_completion_at?: Timestamp;
+    @IsOptional()
+    expected_completion_at?:Timestamp;
 
     @IsString()
     user_id: string;

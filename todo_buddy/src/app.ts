@@ -15,7 +15,7 @@ export class App {
     public initializeMiddlewares(): void {
         this.app.use(express.json());
         this.app.use('/api', adminRouter)
-        // this.app.use('/api', todosRouter)
+        this.app.use('/api', todosRouter)
     }
 
 

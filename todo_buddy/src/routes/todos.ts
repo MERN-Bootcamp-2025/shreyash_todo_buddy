@@ -1,17 +1,17 @@
 import { Router } from 'express';
-// import { TodosController } from '../controllers/todos.controller';
-// import { authentification } from "../middlewares/auth.middleware";
-// import { authorization } from "../middlewares/authorization";
+import { TodosController } from '../controllers/todos.controller';
+import { authentification } from "../middlewares/auth.middleware";
+import { authorization } from "../middlewares/authorization";
 
 
 const router = Router();
 
-// router.post('/todos', TodosController.createTodoTask);
+router.post('/todos', authentification, authorization(['user', 'admin']), TodosController.createTodoTask);
 // router.get('/todos',);
-// router.get('/todos/:id',);
+router.get('/todos/:id', authentification, authorization(['user', 'admin']), TodosController.getTodoById);
 // router.put('/todos/:id',);
 // router.patch('/todos/:id',);
-router.delete('/todos:id',);
+router.delete('/todos/:id', authentification, authorization(['user', 'admin']) , TodosController.softDeleteById);
 
 
 export { router as todosRouter };
