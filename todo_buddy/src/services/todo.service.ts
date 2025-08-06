@@ -2,7 +2,7 @@ import { error } from "console";
 import { PostgresDataSource } from "../config/data-source"
 import { Todo } from "../models/todo"
 import { User } from "../models/user";
-import { CreateTodoDTO } from "../dtos/todos.dto";
+import { CreateTodoDTO, UpdateTodoDTO } from "../dtos/todos.dto";
 
 
 const todosRepo = PostgresDataSource.getRepository(Todo);
@@ -60,6 +60,60 @@ export class TodosService {
             return await todosRepo.save(todo);
         } catch (err) {
             console.error('Error while deleting Todo', err);
+        }
+    }
+
+
+    static async updateTodoById(todoId, userId, dto) {
+        try {
+            const user = await usersRepo.findOne({ where: { id: userId } });
+            if (!user) {
+                throw new error("User not found"); 
+            }
+
+            const todo = await todosRepo.findOne({
+                where: { id: todoId, user: { id: userId } },
+            });
+
+            if (!todo) {
+                throw new error("Todo not found and other user cant update it");
+            }
+
+            todo.title = dto.title;
+            todo.description = dto.description;
+            todo.status = dto.status;
+            todo.priority = dto.priority;
+            todo.expected_completion_at = dto.expected_completion_at;
+
+            return await todosRepo.save(todo);
+        } catch (err) {
+            console.error('Error while updating Todo', err);
+        }
+    }
+
+    static async patchUpdateTodoByID(todoId, userId, dto) {
+        try {
+            const user = await usersRepo.findOne({ where: { id: userId } });
+            if (!user) {
+                throw new error("User not found");
+            }
+
+            const todo = await todosRepo.findOne({
+                where: { id: todoId, user: { id: userId } },
+            });
+            if (!todo) {
+                throw new error("Todo not found and other user cant update it");
+            }
+
+            if (dto.title) todo.title = dto.title;
+            if (dto.description) todo.description = dto.description;
+            if (dto.status) todo.status = dto.status;
+            if (dto.priority) todo.priority = dto.priority;
+            if (dto.expected_completion_at) todo.expected_completion_at = dto.expected_completion_at;
+
+            return await todosRepo.save(todo);
+        } catch (err) {
+            console.error('Error while partially updating Todo', err);
         }
     }
 

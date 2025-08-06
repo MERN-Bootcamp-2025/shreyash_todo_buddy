@@ -9,9 +9,9 @@ const router = Router();
 router.post('/todos', authentification, authorization(['user', 'admin']), TodosController.createTodoTask);
 // router.get('/todos',);
 router.get('/todos/:id', authentification, authorization(['user', 'admin']), TodosController.getTodoById);
-// router.put('/todos/:id',);
-// router.patch('/todos/:id',);
-router.delete('/todos/:id', authentification, authorization(['user', 'admin']) , TodosController.softDeleteById);
+router.put('/todos/:id', authentification, authorization(['user', 'admin']), TodosController.updateTodoById);
+router.patch('/todos/:id', authentification, authorization(['user', 'admin']), TodosController.patchUpdateTodoByID);
+router.delete('/todos/:id', authentification, authorization(['user', 'admin']), TodosController.softDeleteById);
 
 
 export { router as todosRouter };

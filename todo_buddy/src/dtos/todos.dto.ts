@@ -1,4 +1,4 @@
-import {IsDate, IsEnum, IsOptional, IsString } from 'class-validator'
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator'
 import { Priority, Status } from '../models/todo';
 import { Timestamp } from 'typeorm';
 
@@ -10,7 +10,7 @@ export class CreateTodoDTO {
     description: string;
 
     @IsEnum(Status)
-    @IsOptional() 
+    @IsOptional()
     status?: Status
 
     @IsEnum(Priority)
@@ -18,11 +18,52 @@ export class CreateTodoDTO {
     priority?: Priority;
 
     @IsOptional()
-    expected_completion_at?:Timestamp;
+    expected_completion_at?: Timestamp;
 
     @IsString()
     user_id: string;
 }
+
+
+export class UpdateTodoDTO {
+    @IsString()
+    title!: string;
+
+    @IsString()
+    description!: string;
+
+    @IsEnum(Status)
+    @IsOptional()
+    status!: Status
+
+    @IsEnum(Priority)
+    @IsOptional()
+    priority!: Priority;
+
+    @IsOptional()
+    expected_completion_at!: Timestamp;
+}
+
+
+export class PartiallyUpdateTodoDTO {
+    @IsString()
+    title?: string
+
+    @IsString()
+    description?: string;
+
+    @IsEnum(Status)
+    @IsOptional()
+    status?: Status
+
+    @IsEnum(Priority)
+    @IsOptional()
+    priority?: Priority;
+
+    @IsOptional()
+    expected_completion_at?: Timestamp;
+}
+
 
 
 
