@@ -148,15 +148,13 @@ export class TodosService {
         const [todos, total] = await todosRepo.findAndCount({
             where,
             order: {created_at:"DESC"},
-            skip: (Number(page) -1 )*Number(limit),
-            take:Number(limit)
+            skip: (page -1 )*limit,
+            take:limit
         });
 
         return {
-            page: Number(page),
-            limit: Number(limit),
-            total,
-            totalPages: Math.ceil(total/limit),
+            page: page,
+            limit: limit,
             todos
         };
 
