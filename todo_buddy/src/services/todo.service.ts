@@ -3,6 +3,7 @@ import { PostgresDataSource } from "../config/data-source"
 import { Todo } from "../models/todo"
 import { User } from "../models/user";
 import { CreateTodoDTO, UpdateTodoDTO } from "../dtos/todos.dto";
+import { Between , MoreThanOrEqual , LessThanOrEqual } from "typeorm";
 
 
 const todosRepo = PostgresDataSource.getRepository(Todo);
@@ -68,7 +69,7 @@ export class TodosService {
         try {
             const user = await usersRepo.findOne({ where: { id: userId } });
             if (!user) {
-                throw new error("User not found"); 
+                throw new error("User not found");
             }
 
             const todo = await todosRepo.findOne({
@@ -118,5 +119,50 @@ export class TodosService {
     }
 
 
+    static  async getAllTodos(userId, query){
+    try{
+
+        const {page=1,limit=10,status,priority,title,fromDate,toDate} = query;
+
+        const where:any = {user_id: userId, is_deleted: false}
+
+        if(status) where.status = status;
+
+        if(priority) where.priority = priority; 
+
+        if(title) where.title = title;
+
+        if(fromDate && toDate){
+            where.expected_completion = Between(
+                new Date(fromDate),
+                new Date(toDate)
+            );
+        }
+        if(fromDate){
+            where.expected_completion = MoreThanOrEqual(new Date(fromDate));
+        }
+        if(toDate){
+            where.expected_completion = LessThanOrEqual(new Date(toDate));
+        }
+
+        const [todos, total] = await todosRepo.findAndCount({
+            where,
+            order: {created_at:"DESC"},
+            skip: (Number(page) -1 )*Number(limit),
+            take:Number(limit)
+        });
+
+        return {
+            page: Number(page),
+            limit: Number(limit),
+            total,
+            totalPages: Math.ceil(total/limit),
+            todos
+        };
+
+    }catch(error){
+        throw {status: 401, message:"Deleted or Unauthorized"}
+    }
+  }
 
 }

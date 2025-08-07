@@ -120,4 +120,26 @@ export class TodosController {
             return res.status(500).json({ message: "Failed to partially update todo" });
         }
     }
+
+    static async getTodo(req: Request, res: Response) {
+        try {
+            const userId =req.user.id;
+            const { page = 1, limit = 10, status, priority, title, from_date, to_date } = req.query;
+
+            const result = await TodosService.getAllTodos(userId, {
+                page: Number(page),
+                limit: Number(limit),
+                status: status as string,
+                priority: priority as string,
+                title: title as string,
+                from_date: from_date as string,
+                to_date: to_date as string,
+            });
+
+            res.status(200).json({ result: result });
+        } catch (error) {
+            console.error('Error while searching todo', error);
+            return res.status(500).json({ message: "Failed to search todo" });
+        }
+    }
 }

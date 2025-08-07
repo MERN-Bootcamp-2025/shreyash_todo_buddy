@@ -47,9 +47,11 @@ export class UpdateTodoDTO {
 
 export class PartiallyUpdateTodoDTO {
     @IsString()
+    @IsOptional()
     title?: string
 
     @IsString()
+    @IsOptional()
     description?: string;
 
     @IsEnum(Status)
