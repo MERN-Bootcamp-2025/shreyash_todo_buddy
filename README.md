@@ -55,11 +55,12 @@ npm start / npm run dev
 
 postman: API Endpoints
 Method	Endpoint	Role	         Description
-POST	/api/login	Admin/User	Login and get JWT
 POST	/api/invite	Admin	        Invite a new user via sending cradentials to email
+POST	/api/login	Admin/User	Login and get JWT
 GET	/api/users	Admin		List all users
-GET	/api/todos	User/Admin	List user's todos
 POST	/api/todos/:id	User/Admin	Create a todo
+GET	/api/todos	User/Admin	List user's todos with query parameter for search
+GET	/api/todos/:id	User/Admin	get single todo
 PUT	/api/todos/:id	User/Admin	Update todo
 PATCH	/api/todos/:id	User/Admin	Partially update todo
 DELETE	/api/todos/:id	User/Admin	Soft delete todo
