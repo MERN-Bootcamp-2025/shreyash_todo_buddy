@@ -3,7 +3,7 @@ import { PostgresDataSource } from "../config/data-source"
 import { Todo } from "../models/todo"
 import { User } from "../models/user";
 import { CreateTodoDTO, UpdateTodoDTO } from "../dtos/todos.dto";
-import { Between , MoreThanOrEqual , LessThanOrEqual } from "typeorm";
+import { Between, MoreThanOrEqual, LessThanOrEqual, ILike } from "typeorm";
 
 
 const todosRepo = PostgresDataSource.getRepository(Todo);
@@ -119,48 +119,62 @@ export class TodosService {
     }
 
 
-    static  async getAllTodos(userId, query){
-    try{
 
-        const {page=1,limit=10,status,priority,title,fromDate,toDate} = query;
+    static async getAllTodos(userId: string, query: any) {
+        try {
+            console.log('userId', userId)
+            const {
+                page = 1,
+                limit = 10,
+                status,
+                priority,
+                title,
+                from_date,
+                to_date
+            } = query;
 
-        const where:any = {user_id: userId, is_deleted: false}
+            const where: any = {
+                user: { id: userId },
+                is_deleted: false
+            };
+            console.log('where', where);
 
-        if(status) where.status = status;
+            if (status) where.status = status;
+            if (priority) where.priority = priority;
+            if (title) {
+                where.title = ILike(`%${title}%`);;
+            }
 
-        if(priority) where.priority = priority; 
+            if (from_date && to_date) {
+                where.expected_completion = Between(
+                    new Date(from_date),
+                    new Date(to_date)
+                );
+            } else if (from_date) {
+                where.expected_completion = MoreThanOrEqual(new Date(from_date));
+            } else if (to_date) {
+                where.expected_completion = LessThanOrEqual(new Date(to_date));
+            }
 
-        if(title) where.title = title;
+            const [todos, total] = await todosRepo.findAndCount({
+                where,
+                order: { created_at: "DESC" },
+                skip: (Number(page) - 1) * Number(limit),
+                take: Number(limit)
+            });
 
-        if(fromDate && toDate){
-            where.expected_completion = Between(
-                new Date(fromDate),
-                new Date(toDate)
-            );
+            return {
+                page: Number(page),
+                limit: Number(limit),
+                total,
+                totalPages: Math.ceil(total / limit),
+                todos
+            };
+
+        } catch (error) {
+            console.error('Error fetching todos:', error);
+            throw { status: 500, message: "An error occurred while fetching todos." };
         }
-        if(fromDate){
-            where.expected_completion = MoreThanOrEqual(new Date(fromDate));
-        }
-        if(toDate){
-            where.expected_completion = LessThanOrEqual(new Date(toDate));
-        }
-
-        const [todos, total] = await todosRepo.findAndCount({
-            where,
-            order: {created_at:"DESC"},
-            skip: (page -1 )*limit,
-            take:limit
-        });
-
-        return {
-            page: page,
-            limit: limit,
-            todos
-        };
-
-    }catch(error){
-        throw {status: 401, message:"Deleted or Unauthorized"}
     }
-  }
 
 }

@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import { adminRouter } from './routes/admin'
 import { todosRouter } from './routes/todos'
+import cors from "cors"
 
 export class App {
 
@@ -14,6 +15,7 @@ export class App {
 
     public initializeMiddlewares(): void {
         this.app.use(express.json());
+        this.app.use(cors());
         this.app.use('/api', adminRouter)
         this.app.use('/api', todosRouter)
     }

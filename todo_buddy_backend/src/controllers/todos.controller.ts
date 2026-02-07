@@ -9,6 +9,7 @@ export class TodosController {
     static async createTodoTask(req: Request, res: Response) {
         try {
             const dto = plainToClass(CreateTodoDTO, req.body);
+            const userId = req.user.userId;
 
             const validationErrors: ValidationError[] = await validate(dto);
             if (validationErrors.length > 0) {
@@ -121,10 +122,18 @@ export class TodosController {
         }
     }
 
-    static async getTodo(req: Request, res: Response) {
+    static async getTodo(req: Request, res: Response,) {
         try {
-            const userId =req.user.id;
-            const { page = 1, limit = 10, status, priority, title, from_date, to_date } = req.query;
+            const userId = req.user.userId;
+            const {
+                page = 1,
+                limit = 10,
+                status,
+                priority,
+                title,
+                from_date,
+                to_date,
+            } = req.query;
 
             const result = await TodosService.getAllTodos(userId, {
                 page: Number(page),
@@ -135,11 +144,8 @@ export class TodosController {
                 from_date: from_date as string,
                 to_date: to_date as string,
             });
-
-            res.status(200).json({ result: result });
+            res.status(200).json(result);
         } catch (error) {
-            console.error('Error while searching todo', error);
-            return res.status(500).json({ message: "Failed to search todo" });
         }
     }
 }
